@@ -132,6 +132,11 @@ a {
   -ms-flex-align: baseline;
   align-items: baseline;
 }
+.flex-start{
+  -webkit-box-align: flex-start;
+  -ms-flex-align: flex-start;
+  align-items: flex-start;
+}
 
 .pcenter {
   -webkit-box-pack: center;

@@ -80,6 +80,15 @@ body{
 .edu-cont{
   padding: 5px 150px 5px 0;
 }
+.work-cont p:first-child{
+  width: 30%;
+}
+.work-cont p:nth-child(2){
+  width: 50%;
+}
+.work-cont p:nth-child(3){
+  width: 20%;
+}
 .list-square::before{
   content: "";
   position: absolute;
@@ -99,4 +108,14 @@ body{
 }
 .eval-info .right-cont{
   padding-bottom: 0;
+}
+.pro-item {
+  margin-bottom: 20px;
+}
+.pro-item:last-child{
+  margin-bottom: 0;
+}
+.pro-item .pro-tit {
+  font-size: 18px;
+  font-weight: 600;
 }
