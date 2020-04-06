@@ -77,17 +77,14 @@ body{
   border-radius: 15px;
   box-shadow: 0 0 0 3px #fff;
 }
-.edu-cont{
-  padding: 5px 150px 5px 0;
+.edu-cont p:first-child,.work-cont p:first-child{
+  flex: 1
 }
-.work-cont p:first-child{
-  width: 30%;
+.edu-cont p:nth-child(2),.work-cont p:nth-child(2){
+  flex: 2
 }
-.work-cont p:nth-child(2){
-  width: 50%;
-}
-.work-cont p:nth-child(3){
-  width: 20%;
+.edu-cont p:nth-child(3),.work-cont p:nth-child(3){
+  flex: 1
 }
 .list-square::before{
   content: "";
