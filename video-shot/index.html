@@ -8,22 +8,27 @@
     <link rel="stylesheet" href="./video-shot.css">
 </head>
 <body>
+    <input id="J_ipt" class="ipt" type="text" value="https://v-51fanli-net.oss-cn-shanghai.aliyuncs.com/api_upload/daren/gnawilnaf/20210322/fcb3f87282aace30b2f09d7602e9863d719584e7.mp4" />
     <a class="J_btn" style="cursor: pointer;">选取封面</a>
     <script src="./videoshot.js"></script>
     <script>
         var btn = document.querySelector('.J_btn');
-        new VideoShot({
-            el: btn,
-            url: 'https://v-51fanli-net.oss-cn-shanghai.aliyuncs.com/api_upload/daren/gnawilnaf/20210322/fcb3f87282aace30b2f09d7602e9863d719584e7.mp4',
-            callback: function(blob) {
-                var url = window.URL.createObjectURL(blob)
-                var img = document.createElement('img')
-                img.className = 'shot-img'
-                img.src = url
-                document.body.appendChild(img)
-            }
-        })
-        
+        var ipt = document.getElementById('J_ipt')
+        function bindAction () {
+            new VideoShot({
+                el: btn,
+                url: ipt.value,
+                callback: function(imgUrl) {
+                    var url = window.URL.createObjectURL(blob)
+                    var img = document.createElement('img')
+                    img.className = 'shot-img'
+                    img.src = url
+                    document.body.appendChild(img)
+                }
+            })
+        }
+        document.getElementById('J_ipt').addEventListener('blur', bindAction)
+        bindAction()
     </script>
 </body>
 </html>

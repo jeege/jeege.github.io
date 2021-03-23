@@ -59,6 +59,8 @@
         return minute.slice(minute.length - 2) + ':' + second.slice(second.length - 2) + '.' + miliSecond.slice(0, 3);
     }
 
+    var videoShotInstance = null;
+
     function VideoShot(config) {
         var that = this;
         this.el = config.el;
@@ -258,36 +260,36 @@
         
         // 点击事件
         function bindClickEvent(e) {
-            if (e.target === this.el) {
-                this.openModal();
+            if (e.target === that.el) {
+                that.openModal();
                 return;
             }
-            if (e.target === this.bgWrap) {
-                this.closeModal();
+            if (e.target === that.bgWrap) {
+                that.closeModal();
                 return;
             }
-            if (e.target === this.JControllerBar) {
-                this.controllerBarClickHandle(e);
+            if (e.target === that.JControllerBar) {
+                that.controllerBarClickHandle(e);
                 return;
             }
-            if (e.target === this.JShot && !this.isUploading) {
-                this.screenShot();
+            if (e.target === that.JShot && !that.isUploading) {
+                that.screenShot();
                 return; 
             }
         }
 
         // 鼠标按下事件
         function mouseDownHandle(e) {
-            if (e.target === this.JController) {
+            if (e.target === that.JController) {
                 document.body.style.cursor = 'grabbing';
-                this.JController.style.cursor = 'grabbing';
-                this.isGrabbing = true;
+                that.JController.style.cursor = 'grabbing';
+                that.isGrabbing = true;
                 return; 
             }
-            if (e.target === this.JSelect) {
-                this.isMovingSelectRange = true;
-                this.movingData.startX = e.clientX;
-                this.movingData.startY = e.clientY;
+            if (e.target === that.JSelect) {
+                that.isMovingSelectRange = true;
+                that.movingData.startX = e.clientX;
+                that.movingData.startY = e.clientY;
                 return; 
             }
 
@@ -295,37 +297,48 @@
 
         // 鼠标移动事件
         function mouseMoveHandle(e) {
-            if (this.isGrabbing) {
-                this.controllerBarClickHandle(e);
+            if (that.isGrabbing) {
+                that.controllerBarClickHandle(e);
                 return;
             }
-            if (this.isMovingSelectRange) {
-                this.drawSelectRange(e.clientX - this.movingData.startX, e.clientY - this.movingData.startY);
+            if (that.isMovingSelectRange) {
+                that.drawSelectRange(e.clientX - that.movingData.startX, e.clientY - that.movingData.startY);
                 return; 
             }
         }
 
         // 鼠标抬起事件
         function mouseUpHandle(e) {
-            if (this.isGrabbing) {
+            if (that.isGrabbing) {
                 document.body.style.cursor = '';
-                this.JController.style.cursor = 'grab';
-                this.isGrabbing = false;
+                that.JController.style.cursor = 'grab';
+                that.isGrabbing = false;
             }
-            if (this.isMovingSelectRange) {
-                this.isMovingSelectRange = false;
-                var posi = this.calcSelectRangeXY(e.clientX - this.movingData.startX, e.clientY - this.movingData.startY);
-                this.selectRange.x = posi[0];
-                this.selectRange.y = posi[1];
-                this.movingData = {};
+            if (that.isMovingSelectRange) {
+                that.isMovingSelectRange = false;
+                var posi = that.calcSelectRangeXY(e.clientX - that.movingData.startX, e.clientY - that.movingData.startY);
+                that.selectRange.x = posi[0];
+                that.selectRange.y = posi[1];
+                that.movingData = {};
             }
         }
 
+        this.dispose = function() {
+            document.body.removeEventListener('click', bindClickEvent);
+            document.body.removeEventListener('mousedown', mouseDownHandle);
+            document.body.removeEventListener('mousemove', mouseMoveHandle);
+            document.body.removeEventListener('mouseup', mouseUpHandle);
+        };
+        
         // 绑定事件
-        document.body.addEventListener('click', bindClickEvent.bind(this));
-        document.body.addEventListener('mousedown', mouseDownHandle.bind(this));
-        document.body.addEventListener('mousemove', mouseMoveHandle.bind(this));
-        document.body.addEventListener('mouseup', mouseUpHandle.bind(this));
+        document.body.addEventListener('click', bindClickEvent);
+        document.body.addEventListener('mousedown', mouseDownHandle);
+        document.body.addEventListener('mousemove', mouseMoveHandle);
+        document.body.addEventListener('mouseup', mouseUpHandle);
+
+        if (videoShotInstance) videoShotInstance.dispose();
+        videoShotInstance = this;
+        return videoShotInstance;
     }
     exports.VideoShot = VideoShot;
 })(window);

@@ -1,6 +1,10 @@
 html, body {
     margin: 0 auto;
 }
+.ipt {
+    width: 400px;
+    padding: 5px 12px;
+}
 .shot-img {
     display: block;
 }
