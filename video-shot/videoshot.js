@@ -174,13 +174,20 @@
                 this.selectRange.height = videoData.height;
                 this.selectRange.x = (videoData.width - this.selectRange.width) / 2;
                 this.selectRange.y = 0;
-            } else {
+            } else if (videoData.width < videoData.height){
                 // 竖向
                 this.selectRange.type = 'vertical';
                 this.selectRange.width = videoData.width;
                 this.selectRange.height = videoData.width * 4 / 3;
                 this.selectRange.x = 0;
                 this.selectRange.y = (videoData.height - this.selectRange.height) / 2;
+            } else {
+                // 方形
+                this.selectRange.type = 'square';
+                this.selectRange.width = videoData.width;
+                this.selectRange.height = videoData.width;
+                this.selectRange.x = 0; 
+                this.selectRange.y = 0; 
             }
         };
 
