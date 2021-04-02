@@ -113,6 +113,35 @@
         this.movingData = {};
         // 截图的url
         this.img = '';
+        // 是否加载视频元数据
+        this.isLoadedMetaDtata = false
+        // 事件管理
+        this.event = {}
+        this.once = function(type, fn) {
+            var fn2 = function() {
+                fn.apply(this, arguments)
+                that.off(type, fn2)
+            }
+            that.event[type] = that.event[type] || []
+            that.event[type].push(fn2)
+        }
+        this.on = function(type, fn) {
+            that.event[type] = that.event[type] || []
+            that.event[type].push(fn)
+        }
+        this.emit = function(type, param) {
+            if (!that.event[type]) return
+            that.event[type].forEach(function(fn) {
+                fn(param)
+            })
+        }
+        this.off = function(type, fn) {
+            if (!that.event[type]) return
+            var _idx = that.event[type].indexOf(fn)
+            if (_idx >= 0) {
+                that.event[type].splice(_idx, 1)
+            }
+        }
 
         // 视频总时长
         Object.defineProperty(this, 'duration', {
@@ -150,6 +179,10 @@
             });
         }(false));
         
+        this.JVideo.addEventListener('loadedmetadata', function() {
+            that.isLoadedMetaDtata = true
+            that.emit('loaded')
+        })
         this.JVideo.addEventListener('durationchange', function() {
             that.duration = that.JVideo.duration;
         });
@@ -222,14 +255,24 @@
             this.drawSelectRange(0, 0);
         };
 
-        // 打开弹窗
-        this.openModal = function() {
+        function openHandle() {
             document.body.style.overflow = 'hidden';
             document.body.appendChild(that.bgWrap);
             document.body.appendChild(that.modalNode);
             that.setDomData();
             that.getInitRangeInfo();
             that.initSelectRange();
+        }
+
+        // 打开弹窗
+        this.openModal = function() {
+            if (that.isLoadedMetaDtata) {
+                openHandle()
+            } else {
+                that.once('loaded', function() {
+                    openHandle()
+                })
+            }
         };
 
         // 关闭弹窗
@@ -246,6 +289,7 @@
             var persent = posi / this.JControllerBarLength;
             this.currentTime = this.JVideo.currentTime = Math.floor(this.duration * persent * 1000) / 1000;
             this.JController.style.transform = 'translateX(' + (posi - this.JControllerWidth / 2) + 'px)';
+            this.isGrabbing = true
         };
 
         this.screenShot = function() {
@@ -275,10 +319,6 @@
                 that.closeModal();
                 return;
             }
-            if (e.target === that.JControllerBar) {
-                that.controllerBarClickHandle(e);
-                return;
-            }
             if (e.target === that.JShot && !that.isUploading) {
                 that.screenShot();
                 return; 
@@ -288,8 +328,6 @@
         // 鼠标按下事件
         function mouseDownHandle(e) {
             if (e.target === that.JController) {
-                document.body.style.cursor = 'grabbing';
-                that.JController.style.cursor = 'grabbing';
                 that.isGrabbing = true;
                 return; 
             }
@@ -299,7 +337,10 @@
                 that.movingData.startY = e.clientY;
                 return; 
             }
-
+            if (e.target === that.JControllerBar) {
+                that.controllerBarClickHandle(e);
+                return;
+            }
         }
 
         // 鼠标移动事件
@@ -317,8 +358,6 @@
         // 鼠标抬起事件
         function mouseUpHandle(e) {
             if (that.isGrabbing) {
-                document.body.style.cursor = '';
-                that.JController.style.cursor = 'grab';
                 that.isGrabbing = false;
             }
             if (that.isMovingSelectRange) {
