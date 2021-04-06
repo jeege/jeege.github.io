@@ -72,6 +72,18 @@ html, body {
     background: #333;
     box-sizing: border-box;
 }
+.range-info .range-item {
+    display: flex;
+    align-items: center;
+}
+.range-info .range-item > p{
+    margin: 0;
+    flex: 1;
+}
+.range-info .range-item > p > span{
+    display: inline-block;
+    width: 2em;
+}
 .bottom-wrap {
     display: flex;
     align-items: center;

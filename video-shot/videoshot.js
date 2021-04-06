@@ -1,4 +1,6 @@
-(function(exports) {
+(function(global, factory) {
+    (typeof expots === 'object' && typeof module !== 'undefined') ? module.expots = factory(): (global.VideoShot = factory())
+})(this, function() {
     function renderDom(str) {
         var _div = document.createElement('div');
         _div.innerHTML = str;
@@ -76,6 +78,17 @@
             </div>\
             <div class="selector" id="J_controller_bar">\
                 <div class="cur" id="J_controller"></div>\
+            </div>\
+            <div class="range-info">\
+                <p>选区设置：</p>\
+                <div class="range-item">\
+                    <p><span>宽：</span><input id="J_range_width" type="text"/></p>\
+                    <p><span>高：</span><input id="J_range_height" type="text"/></p>\
+                </div>\
+                <div class="range-item">\
+                    <p><span>x：</span><input id="J_range_x" type="text"/></p>\
+                    <p><span>y：</span><input id="J_range_y" type="text"/></p>\
+                </div>\
             </div>\
             <div class="bottom-wrap">\
                 <p class="cur-position">当前位置：<span id="J_current">00:00.000 </span>/ <span id="J_duration">00:00.000</span></p>\
@@ -164,6 +177,34 @@
                 this.JCurrent.innerText = formatTime(value);
             }
         });
+
+        ['width', 'height', 'x', 'y'].forEach(function(key) {
+            var node = that.modalNode.getNodeById('J_range_' + key);
+            document.body.addEventListener('input', function(e) {
+                if (e.target === node) {
+                    that.selectRange.type = 'custom'
+                    that.selectRange[key] = +e.target.value
+                    that.drawSelectRange(0, 0);
+                }
+            });
+            (function(val) {
+                Object.defineProperty(that.selectRange, key, {
+                    get: function() {
+                        return val
+                    },
+                    set: function(value) {
+                        value = getDataWithRange(value, 0, {
+                           width: that.selectRange.outWidth,
+                           height: that.selectRange.outHeight,
+                           x: that.selectRange.outWidth - that.selectRange.width,
+                           y: that.selectRange.outHeight - that.selectRange.height
+                        }[key]);
+                        val = value;
+                        node.value = value
+                    }
+                })
+            }())
+        });
         
 
         // 是否正在上传中
@@ -218,7 +259,7 @@
                 // 方形
                 this.selectRange.type = 'square';
                 this.selectRange.width = videoData.width;
-                this.selectRange.height = videoData.width;
+                this.selectRange.height = videoData.height;
                 this.selectRange.x = 0; 
                 this.selectRange.y = 0; 
             }
@@ -229,8 +270,11 @@
             if (this.selectRange.type === 'horizontal') {
                 x = getDataWithRange(this.selectRange.x + offsetX, 0, this.selectRange.outWidth - this.selectRange.width);
                 y = this.selectRange.y;
-            } else {
+            } else if (this.selectRange.type === 'vertical') {
                 x = this.selectRange.x;
+                y = getDataWithRange(this.selectRange.y + offsetY, 0, this.selectRange.outHeight - this.selectRange.height);
+            } else {
+                x = getDataWithRange(this.selectRange.x + offsetX, 0, this.selectRange.outWidth - this.selectRange.width);
                 y = getDataWithRange(this.selectRange.y + offsetY, 0, this.selectRange.outHeight - this.selectRange.height);
             }
             return [x, y];
@@ -386,6 +430,6 @@
         videoShotInstance = this;
         return videoShotInstance;
     }
-    exports.VideoShot = VideoShot;
-})(window);
+    return VideoShot;
+});
 
