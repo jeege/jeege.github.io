@@ -1,0 +1,1 @@
+import{u as r}from"./plugin-vueexport-helper-ccdc75ac.js";import{a3 as a,w as m}from"./index-ce16a8ef.js";import{b as n}from"./index-a8302ef5.js";const l=r(),{pollingTime:u,isPolling:s}=a(l),g=e=>{s.value||e();const{pause:t,resume:o}=n(()=>{e()},u);m(s,i=>{i?o():t()},{immediate:!0})};export{g as u};
